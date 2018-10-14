@@ -1,6 +1,7 @@
 package com.example.tool.controller;
 
 import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -15,7 +16,7 @@ import java.net.URLEncoder;
  * Description:
  * Modified By:
  */
-@RestController
+@Controller
 @RequestMapping("/urlCode")
 public class UrlEncodeAndDecodeController {
 
