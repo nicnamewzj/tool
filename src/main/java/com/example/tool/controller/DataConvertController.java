@@ -5,13 +5,16 @@ import com.example.tool.exception.UnsupportedMethodException;
 import com.example.tool.rest.RequestVo;
 import com.example.tool.service.DataDealService;
 import com.example.tool.util.EncryptorAES;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Base64;
 
@@ -64,25 +67,14 @@ public class DataConvertController {
         return result;
 
     }
-
-    @RequestMapping(value = "/url/{method}")
+    @RequestMapping(value = "/file/md5",method = RequestMethod.POST)
     @ResponseBody
-    public String dealUrlEncodeOrDecode(@RequestBody String requestParam, @PathVariable("method") String method) {
-        String result = "";
-        switch (Method.valueOf(method)) {
-            case decode:
-                result = dataDealService.urlDecode(requestParam);
-                break;
-            case encode:
-                result = dataDealService.urlEncode(requestParam);
-                break;
-                default:
-                    throw new UnsupportedMethodException(format("Unsupported method: %s",method));
-        }
-        return result;
-
+    public String fileMd5(@RequestParam("file") MultipartFile file) throws IOException {
+        InputStream isp = file.getInputStream();
+        final String hex = DigestUtils.md5Hex(isp);
+        System.out.println("Sign result :" + hex);
+        return hex;
     }
-
     /**
      * @param sSrc           待加密的数据
      * @param encodingFormat 编码格式
