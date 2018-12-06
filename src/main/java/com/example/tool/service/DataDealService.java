@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
+import java.io.*;
 
 import static java.lang.String.format;
 
@@ -49,24 +47,6 @@ public class DataDealService {
         } catch (Exception e) {
             throw new DecryptException(format("Fail to decrypt request %s", requestVo.getRequestText()), e);
         }
-    }
-
-//    url encode and decode
-    public String urlEncode(String request){
-        try {
-            return URLEncoder.encode(request, encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new com.example.tool.exception.UnsupportedEncodingException(format("Unsupported encoding %s",encoding), e);
-        }
-    }
-
-    public String urlDecode(String request){
-        try {
-            return URLDecoder.decode(request, encoding);
-        } catch (UnsupportedEncodingException e) {
-            throw new com.example.tool.exception.UnsupportedEncodingException(format("Unsupported encoding %s",encoding), e);
-        }
-
     }
 
 }

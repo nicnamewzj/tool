@@ -42,8 +42,12 @@
                             <input id="encryptIv" class="form-control" type="text" value="MTIzNDU2Nzg5MDEyMzQ1Ng==">
                         </form>
                     </div>
-                    <div class="col-lg-5">
-                        <button class="btn btn-success" id="btn" style="float: right">GO!!!</button>
+                    <div class="col-lg-2">
+                        <label for="">文件加签</label>
+                        <input id="file" class="form-control" type="file" placeholder="choose file"/>
+                    </div>
+                    <div class="col-lg-3">
+                        <button class="btn btn-success" id="btn" style="float:right">GO!!!</button>
                     </div>
                 </div>
                 <div class="row">
@@ -62,27 +66,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-lg-5">
-                        <textarea id="left" class="col-lg-12"></textarea>
-                    </div>
-                    <div class="col-lg-2" style="align-items: center;">
-                        <select class="form-control col-lg-6" name="" id="code">
-                            <option value="encode">left encode to right</option>
-                            <option value="decode">right decode to left</option>
-                        </select>
-                        <button class="form-control col-lg-6" id="touch">转换</button>
-                    </div>
-                    <div class="col-lg-5" style="float: right">
-                        <textarea id="right" class="col-lg-12" style="float: right;"></textarea>
-                    </div>
-                </div>
             </div>
+        </div>
+        <div>
         </div>
     </div>
 
 </div>
-
 
 
 <script type="text/javascript" src="webjars/jquery/1.11.1/jquery.js"></script>
@@ -90,56 +80,54 @@
 <script type="text/javascript"
         src="webjars/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-
     var BASE_URL = "/base64/";
     $("#btn").click(function () {
-        var method = $("#method").val();
-        var encryptKey = $("#encryptKey").val();
-        var encryptIv = $("#encryptIv").val();
-        var requestText = $("#request").val();
+        var file = $("#file")[0].files[0];
+        if (file) {
+            var formData = new FormData();
+            formData.append("file", $("#file")[0].files[0]);    //生成一对表单属性
+            $.ajax({
+                type: "POST",           //因为是传输文件，所以必须是post
+                url: '/urlCode/file/md5',         //对应的后台处理类的地址
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    console.log(data);
+                    $("#result").val(data);
+                    $("#file").replaceWith('<input id="file" class="form-control" type="file" placeholder="choose file"/>');
+                }
+            });
+        } else {
+            var encryptKey = $("#encryptKey").val();
+            var encryptIv = $("#encryptIv").val();
+            var requestText = $("#request").val();
+            var method = $("#method").val();
 
-        var URL = BASE_URL + method;
+            var URL = BASE_URL + method;
 
-        var requestParam = {
-            'encryptKey': encryptKey,
-            'encryptIv': encryptIv,
-            'requestText': requestText
-        };
-        jQuery.ajax({
-            url: URL,
-            dataType: "text",
-            async: true,
-            contentType: "application/json;charset=UTF-8",
-            type: "POST",
-            data: JSON.stringify(requestParam),
-            success: function (data) {
-                console.log(data)
-                $("#result").val(data);
-            },
-            error: function (msg) {
-                alert(msg);
-            }
-        });
-    });
-
-    $("#touch").click(function () {
-        var method = $("#code").val();
-        var url = "/url/"+ method;
-        var request;
-        if (method == "encode"){
-            request = $("#left").val();
-        }else{
-            request = $("#right").val();
+            var requestParam = {
+                'encryptKey': encryptKey,
+                'encryptIv': encryptIv,
+                'requestText': requestText
+            };
+            jQuery.ajax({
+                url: URL,
+                dataType: "text",
+                async: true,
+                contentType: "application/json;charset=UTF-8",
+                type: "POST",
+                data: JSON.stringify(requestParam),
+                success: function (data) {
+                    console.log(data)
+                    $("#result").val(data);
+                },
+                error: function (msg) {
+                    alert(msg);
+                }
+            });
         }
-       $.post(url,request,function (response) {
-           if (method == "encode"){
-              $("#right").val(response);
-           }else{
-               $("#left").val(response);
-           }
-       });
     });
-
 </script>
 </body>
 </html>
